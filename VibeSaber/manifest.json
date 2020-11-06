@@ -1,14 +1,17 @@
 ﻿{
-  "$schema": "https://raw.githubusercontent.com/bsmg/BSIPA-MetadataFileSchema/master/Schema.json",
-  "id": "VibeSaber",
-  "name": "VibeSaber",
-  "author": "CyberPon3 <cyber@code.horse>",
-  "version": "0.0.1",
-  "description": "",
-  "gameVersion": "1.11.1",
-  "dependsOn": {
-    "BSIPA": "^4.0.5",
-    "BeatSaberMarkupLanguage": "^1.4.1"
-  },
-  "features": []
+    "$schema": "https://raw.githubusercontent.com/bsmg/BSIPA-MetadataFileSchema/master/Schema.json",
+    "name": "VibeSaber",
+    "id": "VibeSaber",
+    "author": "CyberPon3",
+    "version": "0.0.2",
+    "description": "A BeatSaber mod.",
+    "gameVersion": "1.11.1",
+    "dependsOn": {
+        "BSIPA": "^4.0.5",
+        "BeatSaberMarkupLanguage": "^1.4.1"
+    },
+    "features": [],
+    "misc": {
+        "plugin-hint": "VibeSaber.Plugin"
+    }
 }

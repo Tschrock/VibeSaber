@@ -12,49 +12,38 @@ using IPALogger = IPA.Logging.Logger;
 namespace VibeSaber
 {
 
-    [Plugin( RuntimeOptions.SingleStartInit )]
+    [Plugin(RuntimeOptions.DynamicInit)]
     public class Plugin
     {
-        public static string PluginName = "VibeSaber";
         internal static Plugin Instance { get; private set; }
-        internal static IPALogger Log { get; private set; }
+        internal IPALogger Log { get; private set; }
+        internal PluginConfig Config { get; private set; }
 
         [Init]
-        /// <summary>
-        /// Called when the plugin is first loaded by IPA (either when the game starts or when the plugin is enabled if it starts disabled).
-        /// [Init] methods that use a Constructor or called before regular methods like InitWithConfig.
-        /// Only use [Init] with one Constructor.
-        /// </summary>
-        public void Init( IPALogger logger )
+        public Plugin(IPALogger logger, Config conf)
         {
-            Instance = this;
-            Log = logger;
-            Log.Info( "VibeSaber initialized." );
-        }
+            Plugin.Instance = this;
+            this.Log = logger;
+            this.Config = conf.Generated<PluginConfig>();
 
-        #region BSIPA Config
-        [Init]
-        public void InitWithConfig(Config conf)
-        {
-            Configuration.Instance = conf.Generated<Configuration>();
+            Log.Info("VibeSaber initialized.");
             Log.Debug("Config loaded");
-            BeatSaberMarkupLanguage.Settings.BSMLSettings.instance.AddSettingsMenu( PluginName, "VibeSaber.Configuration.bsml", Configuration.Instance );
-        }
-        #endregion
-
-        [OnStart]
-        public void OnApplicationStart()
-        {
-            Log.Debug( "OnApplicationStart" );
-            new GameObject( "VibeSaberController" ).AddComponent<VibeSaberController>();
-
         }
 
-        [OnExit]
-        public void OnApplicationQuit()
+        [OnEnable]
+        public void OnPluginEnabled()
         {
-            Log.Debug( "OnApplicationQuit" );
+            Log.Debug("OnPluginEnabled");
+            BeatSaberMarkupLanguage.Settings.BSMLSettings.instance.AddSettingsMenu(Meta.Product, "VibeSaber.Configuration.bsml", this.Config);
+            // new GameObject( "VibeSaberController" ).AddComponent<VibeSaberController>();
+        }
 
+        [OnDisable]
+        public void OnPluginDisabled()
+        {
+            Log.Debug("OnPluginDisabled");
+            BeatSaberMarkupLanguage.Settings.BSMLSettings.instance.RemoveSettingsMenu(this.Config);
+            // Remove game object
         }
     }
 }
