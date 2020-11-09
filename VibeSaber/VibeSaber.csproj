@@ -64,6 +64,8 @@
         <EmbeddedResource Include="Configuration\PluginConfig.bsml" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="CP3.BeatSaberModdingTools.Tasks" Version="1.0.1" />
+        <PackageReference Include="CP3.BeatSaberModdingTools.Tasks" Version="1.0.1">
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </PackageReference>
     </ItemGroup>
 </Project>
