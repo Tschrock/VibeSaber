@@ -1,5 +1,0 @@
-﻿﻿<settings-container xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
-    <bool-setting text='Enabled' value='IsEnabled' hover-hint='Enable VibeSaber'/>
-    <slider-setting text='Minimum Strength' value='MinimumStrength' hover-hint='The minimum strength.' min='0' max='100' integer-only='true'/>
-    <slider-setting text='Maximum Strength' value='MaximumStrength' hover-hint='The minimum strength.' min='0' max='100' integer-only='true'/>
-</settings-container>

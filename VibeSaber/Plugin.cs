@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using IPA;
 using IPA.Config;
 using IPA.Config.Stores;
-using UnityEngine.SceneManagement;
-using UnityEngine;
 using IPALogger = IPA.Logging.Logger;
+
+using VibeSaber.Configuration;
 
 namespace VibeSaber
 {
@@ -34,7 +30,7 @@ namespace VibeSaber
         public void OnPluginEnabled()
         {
             Log.Debug("OnPluginEnabled");
-            BeatSaberMarkupLanguage.Settings.BSMLSettings.instance.AddSettingsMenu(Meta.Product, "VibeSaber.Configuration.bsml", this.Config);
+            BeatSaberMarkupLanguage.Settings.BSMLSettings.instance.AddSettingsMenu(Meta.Product, "VibeSaber.Configuration.PluginConfig.bsml", this.Config);
             // new GameObject( "VibeSaberController" ).AddComponent<VibeSaberController>();
         }
 
