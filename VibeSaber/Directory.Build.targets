@@ -20,10 +20,9 @@
     <!--Runs a build task to get info about the project used by later targets.-->
     <Target Name="GetProjectInfo" AfterTargets="CheckBSMTInstalled" DependsOnTargets="CheckBSMTInstalled" Condition="'$(BSMTTaskAssembly)' != ''">
         <Message Text="Using AssemblyVersion defined in project instead of 'Properties\AssemblyInfo.cs'" Importance="high" Condition="'$(AssemblyVersion)' != ''" />
-        <GetManifestInfo KnownAssemblyVersion="$(AssemblyVersion)" ErrorOnMismatch="$(ErrorOnMismatchedVersions)">
+        <GetManifestInfo>
             <Output TaskParameter="PluginVersion" PropertyName="PluginVersion" />
             <Output TaskParameter="GameVersion" PropertyName="GameVersion" />
-            <Output TaskParameter="AssemblyVersion" PropertyName="AssemblyVersion" />
         </GetManifestInfo>
         <GetCommitInfo ProjectDir="$(ProjectDir)">
             <Output TaskParameter="CommitHash" PropertyName="CommitHash" />
@@ -93,34 +92,12 @@
         <Copy SourceFiles="$(OutputAssemblyName).pdb" DestinationFiles="$(PluginDir)\$(AssemblyName).pdb" Condition="'$(CanCopyToPlugins)' == 'True' AND Exists('$(OutputAssemblyName).pdb')" />
         <Warning Text="Beat Saber is running, restart the game to use the latest build." Condition="'$(IsRunning)' == 'True'" />
     </Target>
-
-    <UsingTask TaskName="JsonPeek" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-        <ParameterGroup>
-            <File ParameterType="System.String" Required="true" />
-            <JsonPath ParameterType="System.String" Required="true" />
-            <Result ParameterType="System.String" Output="true" />
-        </ParameterGroup>
-        <Task>
-            <Reference Include="Newtonsoft.Json" />
-            <Using Namespace="Newtonsoft.Json.Linq" />
-            <Code Type="Fragment" Language="C#">
-                Result = (JObject.Parse(System.IO.File.ReadAllText(File)).SelectToken(JsonPath) as JValue)?.Value.ToString();
-            </Code>
-        </Task>
-    </UsingTask>
     <Target Name="SetAssemblyInfoFromPluginManifest" BeforeTargets="GenerateAssemblyInfo;GetProjectInfo">
-        <JsonPeek File="manifest.json" JsonPath="$.version">
-            <Output TaskParameter="Result" PropertyName="AssemblyVersion" />
-        </JsonPeek>
-        <JsonPeek File="manifest.json" JsonPath="$.name">
-            <Output TaskParameter="Result" PropertyName="Product" />
-            <Output TaskParameter="Result" PropertyName="AssemblyTitle" />
-        </JsonPeek>
-        <JsonPeek File="manifest.json" JsonPath="$.description">
-            <Output TaskParameter="Result" PropertyName="Description" />
-        </JsonPeek>
-        <JsonPeek File="manifest.json" JsonPath="$.author">
-            <Output TaskParameter="Result" PropertyName="Authors" />
-        </JsonPeek>
+        <GetManifestInfo>
+            <Output TaskParameter="PluginName" PropertyName="Product" />
+            <Output TaskParameter="PluginName" PropertyName="AssemblyTitle" />
+            <Output TaskParameter="PluginAuthor" PropertyName="Authors" />
+            <Output TaskParameter="PluginVersion" PropertyName="AssemblyVersion" />
+        </GetManifestInfo>
     </Target>
 </Project>
