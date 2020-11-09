@@ -2,7 +2,7 @@
     <bool-setting text='Enabled' hover-hint='Enable VibeSaber.' value='IsEnabled'/>
     <bool-setting text='Preview Options' hover-hint='Preview options as you change them.' value='IsPreviewEnabled'/>
     <dropdown-list-setting text='Pulse Mode' hover-hint='The pulse mode.' value='PulseMode' choices='PulseModeOptions' formatter='enum-formatter' />
-    <slider-setting text='Pulse Length' hover-hint='The length of a pulse, in milliseconds.' value='PulseLength' min='100' max='5000' integer-only='true'/>
+    <increment-setting text='Pulse Length' hover-hint='The length of a pulse, in milliseconds.' value='PulseLength' increment='50' min='100' max='5000' integer-only='true'/>
     <dropdown-list-setting text='Strength Mode' hover-hint='The strength mode.' value='StrengthMode' choices='StrengthModeOptions' formatter='enum-formatter' />
     <slider-setting text='Maximum Strength' hover-hint='The maximum strength.' value='MaximumStrength' min='0' max='100' integer-only='true'/>
     <slider-setting text='Minimum Strength' hover-hint='The minimum strength.' value='MinimumStrength' min='0' max='100' integer-only='true'/>
