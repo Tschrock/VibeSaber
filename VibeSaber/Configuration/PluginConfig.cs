@@ -34,7 +34,7 @@ namespace VibeSaber.Configuration
         public virtual bool IsPreviewEnabled { get; set; } = DefaultSettings.IsPreviewEnabled;
 
         [UIValue(nameof(PulseModeOptions))]
-        private List<object> PulseModeOptions = Enum.GetValues(typeof(Configuration.PulseMode)).Cast<object>().ToList();
+        public List<object> PulseModeOptions => Enum.GetValues(typeof(Configuration.PulseMode)).Cast<object>().ToList();
 
         [UIValue(nameof(PulseMode))]
         [UseConverter(typeof(EnumConverter<PulseMode>))]
@@ -44,7 +44,7 @@ namespace VibeSaber.Configuration
         public virtual int PulseLength { get; set; } = DefaultSettings.PulseLength;
 
         [UIValue(nameof(StrengthModeOptions))]
-        private List<object> StrengthModeOptions = Enum.GetValues(typeof(Configuration.StrengthMode)).Cast<object>().ToList();
+        public List<object> StrengthModeOptions => Enum.GetValues(typeof(Configuration.StrengthMode)).Cast<object>().ToList();
 
         [UIValue(nameof(StrengthMode))]
         [UseConverter(typeof(EnumConverter<StrengthMode>))]
@@ -56,8 +56,8 @@ namespace VibeSaber.Configuration
         [UIValue(nameof(MinimumStrength))]
         public virtual int MinimumStrength { get; set; } = DefaultSettings.MinimumStrength;
 
-        [UIAction(nameof(FormatEnum))]
-        private string FormatEnum(object value)
+        [UIAction("enum-formatter")]
+        public string FormatEnum(object value)
         {
             string enumName = value.ToString();
             Type enumType = value.GetType();
