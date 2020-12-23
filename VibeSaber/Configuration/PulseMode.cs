@@ -5,7 +5,7 @@ namespace VibeSaber.Configuration
     internal enum PulseMode
     {
         [Name("Disabled")]
-        [Description("Disable Pulses.")]
+        [Description("Disable pulses.")]
         Disabled,
 
         [Name("Note Missed")]

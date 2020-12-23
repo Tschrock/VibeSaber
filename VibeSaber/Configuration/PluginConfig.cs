@@ -23,6 +23,7 @@ namespace VibeSaber.Configuration
         public const StrengthMode StrengthMode = Configuration.StrengthMode.Battery;
         public const int MaximumStrength = 100;
         public const int MinimumStrength = 0;
+        public const string ServerUrl = "ws://localhost:12345/buttplug";
     }
 
     internal class PluginConfig
@@ -56,6 +57,9 @@ namespace VibeSaber.Configuration
         [UIValue(nameof(MinimumStrength))]
         public virtual int MinimumStrength { get; set; } = DefaultSettings.MinimumStrength;
 
+        [UIValue(nameof(ServerUrl))]
+        public virtual string ServerUrl { get; set; } = DefaultSettings.ServerUrl;
+
         [UIAction("enum-formatter")]
         public string FormatEnum(object value)
         {
@@ -77,6 +81,13 @@ namespace VibeSaber.Configuration
                 }
             }
             return enumName;
+        }
+
+        [UIAction("server-url-changed")]
+        public void ServerUrlChanged()
+        {
+            Plugin.Instance?.ButtplugCoordinator?.Connect(ServerUrl);
+            Plugin.Instance?.Log.Info("Refreshing Devices");
         }
     }
 }

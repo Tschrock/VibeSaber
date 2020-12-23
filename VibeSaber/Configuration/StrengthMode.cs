@@ -5,7 +5,7 @@ namespace VibeSaber.Configuration
     internal enum StrengthMode
     {
         [Name("Disabled (Max)")]
-        [Description("Disables variable strenght and uses the max.")]
+        [Description("Disables variable strength and always uses the max.")]
         Disabled,
 
         [Name("Battery")]
