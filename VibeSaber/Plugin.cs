@@ -1,16 +1,17 @@
-﻿using IPA;
+﻿using System.Threading.Tasks;
+
+using IPA;
 using IPA.Config;
 using IPA.Config.Stores;
 using IPALogger = IPA.Logging.Logger;
 
 using VibeSaber.Configuration;
+
 using UnityEngine;
-using System.Threading.Tasks;
 
 namespace VibeSaber
 {
-
-    [Plugin(RuntimeOptions.DynamicInit)]
+    [Plugin(RuntimeOptions.SingleStartInit)]
     public class Plugin
     {
         internal static Plugin? Instance { get; private set; }
@@ -31,10 +32,12 @@ namespace VibeSaber
         }
 
         [OnEnable]
-        public void OnPluginEnabled()
+        public async Task OnPluginEnabledAsync()
         {
             Log.Info("OnPluginEnabled");
+            Log.Info("Adding Settings Menu");
             BeatSaberMarkupLanguage.Settings.BSMLSettings.instance.AddSettingsMenu(Meta.Product, "VibeSaber.Configuration.PluginConfig.bsml", this.Config);
+            Log.Info("Hooking Game Events");
             BS_Utils.Utilities.BSEvents.menuSceneActive += OnMenuSceneActive;
             BS_Utils.Utilities.BSEvents.gameSceneActive += OnGameSceneActive;
             BS_Utils.Utilities.BSEvents.songPaused += OnSongPaused;
@@ -46,15 +49,22 @@ namespace VibeSaber
             BS_Utils.Utilities.BSEvents.noteWasCut += OnNoteCut;
             BS_Utils.Utilities.BSEvents.noteWasMissed += OnNoteMissed;
             BS_Utils.Utilities.BSEvents.energyDidChange += OnEnergyChanged;
+            if (ButtplugCoordinator == null)
+            {
+                Log.Info("Creating Buttplug Coordinator");
             ButtplugCoordinator = new GameObject("ButtplugCoordinator").AddComponent<ButtplugCoordinator>();
-            ButtplugCoordinator.Connect(Config.ServerUrl);
+                Log.Info("Disconnecting from Buttplug server");
+                await ButtplugCoordinator.Connect(Config.ServerUrl).ConfigureAwait(false);
+            }
         }
 
         [OnDisable]
-        public void OnPluginDisabledAsync()
+        public async Task OnPluginDisabledAsync()
         {
-            Log.Info("OnPluginDisabled");
+            Log.Info("OnPluginDisabled Start");
+            Log.Info("Removing Settings Menu");
             BeatSaberMarkupLanguage.Settings.BSMLSettings.instance.RemoveSettingsMenu(this.Config);
+            Log.Info("Unhooking Game Events");
             BS_Utils.Utilities.BSEvents.menuSceneActive -= OnMenuSceneActive;
             BS_Utils.Utilities.BSEvents.gameSceneActive -= OnGameSceneActive;
             BS_Utils.Utilities.BSEvents.songPaused -= OnSongPaused;
@@ -68,12 +78,12 @@ namespace VibeSaber
             BS_Utils.Utilities.BSEvents.energyDidChange -= OnEnergyChanged;
             if (ButtplugCoordinator != null)
             {
-                ButtplugCoordinator.Disconnect();
-                Plugin.Instance?.Log.Info($"Disconnected, deleting game object.");
-                GameObject.Destroy(ButtplugCoordinator.gameObject);
-                Plugin.Instance?.Log.Info($"Deleted game object.");
+                Log.Info("Disconnecting from Buttplug server");
+                await ButtplugCoordinator.Disconnect().ConfigureAwait(false);
+                Log.Info("Destroying Buttplug Coordinator");
                 ButtplugCoordinator = null;
             }
+            Log.Info("OnPluginDisabled End");
         }
 
         private float energyLevel;

@@ -3,8 +3,7 @@ using System.Threading.Tasks;
 
 using UnityEngine;
 
-using Buttplug.Client;
-using Buttplug.Client.Connectors.WebsocketConnector;
+using Buttplug;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,31 +11,27 @@ namespace VibeSaber
 {
     public class ButtplugCoordinator : MonoBehaviour
     {
+        private List<double[]> activePulses = new List<double[]>();
+        private double intensity = 0;
 
-        public enum State
-        {
-            DISCONNECTED,
-            CONNECTING,
-            CONNECTED,
-            DISCONNECTING,
-        }
+        public Uri? ServerUri { get; private set; }
 
-        private ButtplugWebsocketConnector? connection;
-
-        private ButtplugClient? client;
+        private ButtplugClient client = new ButtplugClient(Meta.Product);
 
         public ButtplugClientDevice[] Devices => client?.Devices ?? Array.Empty<ButtplugClientDevice>();
 
-        public void Connect(string server)
-        {
-            // If we're already connected, disconnect
-            if (client != null) Disconnect();
+        public ButtplugCoordinator() {
+            Plugin.Instance?.Log.Info($"ButtplugCoordinator Construct");
+        }
+        ~ButtplugCoordinator() {
+            Plugin.Instance?.Log.Info($"ButtplugCoordinator Deconstruct");
+        }
 
-            // Make a URI
-            Uri serverUri;
+        public async Task Connect(string server)
+        {
             try
             {
-                serverUri = new Uri(server);
+                ServerUri = new Uri(server);
             }
             catch
             {
@@ -44,98 +39,80 @@ namespace VibeSaber
                 return;
             }
 
-            // Make a new connection
-            connection = new ButtplugWebsocketConnector(serverUri);
-
-            // Make a new client
-            client = new ButtplugClient(Meta.Product, connection);
             try
             {
-                client.ConnectAsync().Wait();
+                Plugin.Instance?.Log.Info($"Connecting to Intiface Server '{server}'...");
+                await client.ConnectAsync(new ButtplugWebsocketConnectorOptions(ServerUri)).ConfigureAwait(false);
+                Plugin.Instance?.Log.Info($"Connected, scanning.");
+                await client.StartScanningAsync().ConfigureAwait(false);
                 Plugin.Instance?.Log.Info($"Connected to Intiface Server '{server}'.");
             }
-            catch (ButtplugClientConnectorException ex)
+            catch (ButtplugException ex)
             {
-                client = null;
-                connection = null;
                 Plugin.Instance?.Log.Error($"Can't connect to Intiface Server. {ex.InnerException.Message}");
             }
         }
 
-        public void Disconnect()
+        public async Task Disconnect()
         {
-            Plugin.Instance?.Log.Info($"Try Disconnect.");
-            if (this.client != null)
-            {
-                var client = this.client;
-                this.client = null;
-                foreach (var device in client.Devices)
-                {
-                    Plugin.Instance?.Log.Info($"Stop Device '{device.Name}'.");
-                    device.StopDeviceCmd().Wait();
-                }
-                Plugin.Instance?.Log.Info($"Disconnect.");
-                client.DisconnectAsync().Wait();
-                client = null;
-                connection = null;
-            }
+            Plugin.Instance?.Log.Info($"Stopping scanning.");
+            await client.StopScanningAsync().ConfigureAwait(false);
+            Plugin.Instance?.Log.Info($"Preparing to disconnect from server '{ServerUri}'.");
+            await this.StopAll().ConfigureAwait(false);
+            Plugin.Instance?.Log.Info($"Disconnecting.");
+            await client.DisconnectAsync().ConfigureAwait(false);
+            Plugin.Instance?.Log.Info($"Successfully disconnected from server.");
         }
-
-        private List<double[]> activePulses = new List<double[]>();
-        private double lastIntensity = 0;
 
         private void Awake()
         {
             GameObject.DontDestroyOnLoad(this); // Don't destroy this object on scene changes
         }
 
-        private void Update()
+        private async Task Update()
         {
-            Update(Time.deltaTime * 1000);
+            await Update(Time.deltaTime * 1000).ConfigureAwait(false);
         }
 
-        private void Update(double deltaMs) {
+        private async Task Update(double deltaMs)
+        {
             activePulses.ForEach(p => p[0] -= deltaMs);
             activePulses = activePulses.Where(p => p[0] > 0).ToList();
             var max = activePulses.Select(p => p[1]).DefaultIfEmpty(0).Max();
-            if(max != lastIntensity) {
-                lastIntensity = max;
-                SetIntensity(max);
+            if (max != intensity)
+            {
+                intensity = max;
+                await SetIntensity(max).ConfigureAwait(false);
             }
         }
 
-        public void Pulse(double intensity, double duration)
+        public async Task Pulse(double intensity, double duration)
         {
             if (client != null)
             {
                 activePulses.Add(new[] { duration, intensity });
-                Update(0);
+                await Update(0).ConfigureAwait(false);
             }
         }
 
-        public void SetIntensity(double intensity)
+        public async Task SetIntensity(double intensity)
         {
             if (client != null)
             {
                 foreach (var device in client.Devices)
                 {
                     Plugin.Instance?.Log.Info($"SendVibrateCmd({intensity}) to '{device.Name}'.");
-                    device.SendVibrateCmd(intensity).Wait();
+                    await device.SendVibrateCmd(intensity).ConfigureAwait(false);
                 }
             }
         }
 
-        public void StopAll()
+        public async Task StopAll()
         {
-            if (client != null)
-            {
-                foreach (var device in client.Devices)
-                {
-                    Plugin.Instance?.Log.Info($"Stop Device '{device.Name}'.");
-                    device.StopDeviceCmd().Wait();
-                }
-            }
+            Plugin.Instance?.Log.Info($"Clearing pulses.");
+            this.activePulses.Clear();
+            Plugin.Instance?.Log.Info($"Telling all devices to stop.");
+            await client.StopAllDevicesAsync().ConfigureAwait(false);
         }
-
     }
 }
