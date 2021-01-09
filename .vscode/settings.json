@@ -3,4 +3,10 @@
         "*.bsml": "xml"
     },
     "discord.enabled": false,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.vs": true,
+        "**/bin": true,
+        "**/obj": true,
+    }
 }

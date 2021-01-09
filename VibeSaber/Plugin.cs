@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 using IPA;
 using IPA.Config;
@@ -8,6 +8,7 @@ using IPALogger = IPA.Logging.Logger;
 using VibeSaber.Configuration;
 
 using UnityEngine;
+using System;
 
 namespace VibeSaber
 {
@@ -32,7 +33,7 @@ namespace VibeSaber
         }
 
         [OnEnable]
-        public async Task OnPluginEnabledAsync()
+        public void OnPluginEnabled()
         {
             Log.Info("OnPluginEnabled");
             Log.Info("Adding Settings Menu");
@@ -52,14 +53,13 @@ namespace VibeSaber
             if (ButtplugCoordinator == null)
             {
                 Log.Info("Creating Buttplug Coordinator");
-            ButtplugCoordinator = new GameObject("ButtplugCoordinator").AddComponent<ButtplugCoordinator>();
-                Log.Info("Disconnecting from Buttplug server");
-                await ButtplugCoordinator.Connect(Config.ServerUrl).ConfigureAwait(false);
+                ButtplugCoordinator = new GameObject("ButtplugCoordinator").AddComponent<ButtplugCoordinator>();
+                ButtplugCoordinator.Connect(Config.ServerUrl);
             }
         }
 
         [OnDisable]
-        public async Task OnPluginDisabledAsync()
+        public void OnPluginDisabled()
         {
             Log.Info("OnPluginDisabled Start");
             Log.Info("Removing Settings Menu");
@@ -79,8 +79,9 @@ namespace VibeSaber
             if (ButtplugCoordinator != null)
             {
                 Log.Info("Disconnecting from Buttplug server");
-                await ButtplugCoordinator.Disconnect().ConfigureAwait(false);
+                ButtplugCoordinator.Disconnect();
                 Log.Info("Destroying Buttplug Coordinator");
+                GameObject.Destroy(ButtplugCoordinator);
                 ButtplugCoordinator = null;
             }
             Log.Info("OnPluginDisabled End");

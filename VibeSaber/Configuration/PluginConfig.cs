@@ -84,9 +84,9 @@ namespace VibeSaber.Configuration
         }
 
         [UIAction("server-url-changed")]
-        public void ServerUrlChanged()
+        public void ServerUrlChanged(string value)
         {
-            Plugin.Instance?.ButtplugCoordinator?.Connect(ServerUrl);
+            Plugin.Instance?.ButtplugCoordinator?.Connect(value);
             Plugin.Instance?.Log.Info("Refreshing Devices");
         }
     }
