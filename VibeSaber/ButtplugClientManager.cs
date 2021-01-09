@@ -191,12 +191,12 @@ namespace VibeSaber
                             currentClient = this.client;
                         }
 
-                        Plugin.Instance?.Log.Info($"Sending intensity {value}.");
+                        Plugin.Instance?.Log.Trace($"Sending intensity {value}.");
                         foreach (var device in currentClient.Devices)
                         {
                             await device.SendVibrateCmd(value).ConfigureAwait(false);
                         }
-                        Plugin.Instance?.Log.Info($"Sent intensity.");
+                        Plugin.Instance?.Log.Trace($"Sent intensity.");
                     }));
                 }
                 this.UpdateTaskQueue();
