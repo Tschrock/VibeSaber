@@ -76,8 +76,8 @@
         <EmbeddedResource Include="Configuration\PluginConfig.bsml" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Buttplug" Version="1.0.1" />
-        <PackageReference Include="ButtplugRustFFI" Version="1.0.0" />
+        <PackageReference Include="Buttplug" Version="1.0.8" />
+        <PackageReference Include="ButtplugRustFFI" Version="1.0.4" />
         <PackageReference Include="CP3.BeatSaberModdingTools.Tasks" Version="1.0.1">
             <ExcludeAssets>runtime</ExcludeAssets>
         </PackageReference>
