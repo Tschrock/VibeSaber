@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace VibeSaber
@@ -93,6 +93,10 @@ namespace VibeSaber
         public void StopAll()
         {
             this.client.StopAll();
+        }
+
+        public Task Shutdown() {
+            return this.client.Shutdown();
         }
     }
 }

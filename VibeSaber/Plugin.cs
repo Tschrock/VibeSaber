@@ -8,7 +8,6 @@ using IPALogger = IPA.Logging.Logger;
 using VibeSaber.Configuration;
 
 using UnityEngine;
-using System;
 
 namespace VibeSaber
 {
@@ -59,7 +58,7 @@ namespace VibeSaber
         }
 
         [OnDisable]
-        public void OnPluginDisabled()
+        public async Task OnPluginDisabled()
         {
             Log.Info("OnPluginDisabled Start");
             Log.Info("Removing Settings Menu");
@@ -79,7 +78,7 @@ namespace VibeSaber
             if (ButtplugCoordinator != null)
             {
                 Log.Info("Disconnecting from Buttplug server");
-                ButtplugCoordinator.Disconnect();
+                await ButtplugCoordinator.Shutdown().ConfigureAwait(false);
                 Log.Info("Destroying Buttplug Coordinator");
                 GameObject.Destroy(ButtplugCoordinator);
                 ButtplugCoordinator = null;
