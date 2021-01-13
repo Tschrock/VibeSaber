@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 using Buttplug;
 
@@ -78,11 +79,13 @@ namespace VibeSaber
                     // Connect to the server
                     Plugin.Instance?.Log.Info($"Connecting to Buttplug server '{uri}'.");
                     await this.activeClient.ConnectAsync(new ButtplugWebsocketConnectorOptions(uri)).ConfigureAwait(false);
+                    LogProcInfo();
                     Plugin.Instance?.Log.Info($"Connected to Buttplug server.");
 
                     // Start scanning for connected devices
                     Plugin.Instance?.Log.Info($"Starting scan for devices.");
                     await this.activeClient.StartScanningAsync().ConfigureAwait(false);
+                    LogProcInfo();
                     Plugin.Instance?.Log.Info($"Scan started.");
 
                     // Update the state
@@ -135,12 +138,15 @@ namespace VibeSaber
             // Stop all connected devices
             Plugin.Instance?.Log.Info($"Stopping devices.");
             await oldClient.StopAllDevicesAsync().ConfigureAwait(false);
+            LogProcInfo();
             // Stop device scanning
             Plugin.Instance?.Log.Info($"Stopping scans.");
             await oldClient.StopScanningAsync().ConfigureAwait(false);
+            LogProcInfo();
             // Disconnect from the server
             Plugin.Instance?.Log.Info($"Disconnecting from server.");
             await oldClient.DisconnectAsync().ConfigureAwait(false);
+            LogProcInfo();
             Plugin.Instance?.Log.Info($"Disconnected.");
             lock (this.buttlock)
             {
@@ -237,6 +243,8 @@ namespace VibeSaber
                         foreach (var device in currentClient.Devices)
                         {
                             await device.SendVibrateCmd(value).ConfigureAwait(false);
+                            LogProcInfo();
+
                         }
                         Plugin.Instance?.Log.Trace($"Sent intensity.");
                     }));
@@ -263,6 +271,7 @@ namespace VibeSaber
                         }
                         Plugin.Instance?.Log.Info($"Sending StopAllDevices.");
                         await currentClient.StopAllDevicesAsync().ConfigureAwait(false);
+                        LogProcInfo();
                         Plugin.Instance?.Log.Info($"Sent StopAllDevices.");
                     }));
                 }
@@ -272,21 +281,37 @@ namespace VibeSaber
 
         public async Task Shutdown()
         {
+            Plugin.Instance?.Log.Info($"Shutting down.");
             lock (this.buttlock)
             {
+                Plugin.Instance?.Log.Info($"Marking shutdown.");
                 shutdown = true;
+                Plugin.Instance?.Log.Info($"Clearing task queue.");
                 taskQueue.Clear();
             }
             var task = this.currentTask;
             if (task != null)
             {
+                Plugin.Instance?.Log.Info($"Completing existing task.");
                 await task.ConfigureAwait(false);
+                LogProcInfo();
+
             }
             if (this.state == State.CONNECTED || this.state == State.CONNECTING)
             {
+
+                Plugin.Instance?.Log.Info($"Running disconnect task.");
                 await this.DisconnectTask().ConfigureAwait(false);
+                LogProcInfo();
+
             }
 
         }
+
+        static void LogProcInfo([CallerLineNumber] int lineNumber = 0, [CallerMemberName] string caller = "")
+        {
+            Plugin.Instance?.Log.Info($"{caller}:{lineNumber} - Id: {System.Threading.Thread.CurrentThread.ManagedThreadId} - Name: {System.Threading.Thread.CurrentThread.Name}");
+        }
+
     }
 }

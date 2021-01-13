@@ -5,7 +5,7 @@ A Beat Saber mod that adds vibration control through [Intiface](https://intiface
 
 --------
 
-**WARNING:** This mod is currently unstable and you are guarrenteed to run into some bugs. For example, due to arcane programming gremlins, BEAT SABER WILL HANG WHEN YOU EXIT IT. This is expected behavior and until I manage to exorcise the code demons you will have to force-quit it from windows.
+**WARNING:** This mod is currently unstable and you are guaranteed to run into some bugs. For example, due to arcane programming gremlins, BEAT SABER WILL HANG WHEN YOU EXIT IT. This is expected behavior and until I manage to exorcise the code demons you will have to force-quit it from windows.
 
 --------
 
@@ -14,7 +14,7 @@ A Beat Saber mod that adds vibration control through [Intiface](https://intiface
 1. Install [Intiface](https://intiface.com/desktop/)
 2. Ensure you have the required mods
     - BeatSaberMarkupLanguage (>= 1.4.1)
-    - BS Utils ()>= 1.6.5)
+    - BS Utils (>= 1.6.5)
 3. Download the latest `.zip` release from [here](https://github.com/Tschrock/VibeSaber/releases)
 4. Extract the files into your Beat Saber directory
 

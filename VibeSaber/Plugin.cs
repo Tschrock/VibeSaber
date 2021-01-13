@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 using IPA;
@@ -77,6 +78,8 @@ namespace VibeSaber
             BS_Utils.Utilities.BSEvents.energyDidChange -= OnEnergyChanged;
             if (ButtplugCoordinator != null)
             {
+
+                // System.Diagnostics.Process.GetCurrentProcess().Kill();
                 Log.Info("Disconnecting from Buttplug server");
                 await ButtplugCoordinator.Shutdown().ConfigureAwait(false);
                 Log.Info("Destroying Buttplug Coordinator");
